@@ -46,8 +46,18 @@ public class PessoaResource {
 	@Transactional
 	public ResponseEntity<?> buscarPeloCodigo(@PathVariable Long codigo) {
 		Optional<Pessoa> optional = pessoaRepository.findById(codigo);
-		return optional.isPresent() ? ResponseEntity.ok(optional.get())
-				: ResponseEntity.notFound().build();
+		return ResponseEntity.ok(optional.get());
+	}
+
+	@DeleteMapping("/{codigo}")
+	public ResponseEntity<?> remover(@PathVariable Long codigo) {
+		Optional<Pessoa> optional = pessoaRepository.findById(codigo);
+		if (optional.isPresent()){
+			pessoaRepository.delete(optional.get());
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		} else {
+			return ResponseEntity.notFound().build();
+		}
 	}
 
 }
