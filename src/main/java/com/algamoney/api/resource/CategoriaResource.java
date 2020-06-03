@@ -1,12 +1,14 @@
 package com.algamoney.api.resource;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.algamoney.api.event.RecursoCriadoEvent;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.algamoney.api.model.Categoria;
 import com.algamoney.api.repository.CategoriaRepository;
@@ -26,8 +27,11 @@ public class CategoriaResource {
 
 	private final CategoriaRepository categoriaRepository;
 
-	public CategoriaResource(CategoriaRepository categoriaRepository) {
+	private final ApplicationEventPublisher publisher;
+
+	public CategoriaResource(CategoriaRepository categoriaRepository, ApplicationEventPublisher publisher) {
 		this.categoriaRepository = categoriaRepository;
+		this.publisher = publisher;
 	}
 
 	@GetMapping
@@ -38,13 +42,10 @@ public class CategoriaResource {
 	@PostMapping
 	public ResponseEntity<Categoria> criar(@Valid @RequestBody Categoria categoria, HttpServletResponse response) {
 		Categoria categoriaSave = categoriaRepository.save(categoria);
-		
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{codigo}")
-		.buildAndExpand(categoriaSave.getCodigo()).toUri();
-		
-		response.setHeader("Location", uri.toASCIIString());
-		
-		return ResponseEntity.created(uri).body(categoriaSave);
+
+		publisher.publishEvent(new RecursoCriadoEvent(this, response, categoriaSave.getCodigo()));
+
+		return ResponseEntity.status(HttpStatus.CREATED).body(categoriaSave);
 		
 	}
 	
