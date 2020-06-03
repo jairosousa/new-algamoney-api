@@ -7,52 +7,77 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
- * Classe vai capturar exceções
- * 
- * @author jnasciso
+ * Class vai capturar exceções
  *
+ * @author jnasciso
  */
 @ControllerAdvice
 public class AlgamoneyExceptionHandler extends ResponseEntityExceptionHandler {
 
-	@Autowired
-	private MessageSource source;
+    @Autowired
+    private MessageSource source;
 
-	@Override
-	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
-			HttpHeaders headers, HttpStatus status, WebRequest request) {
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
+                                                                  HttpHeaders headers, HttpStatus status, WebRequest request) {
 
-		String mensagemUsuário = source.getMessage("mensagem.invalida", null, LocaleContextHolder.getLocale());
+        String mensagemUsuário = source.getMessage("mensagem.invalida", null, LocaleContextHolder.getLocale());
 
-		String mensagemDesenvolvedor = ex.getCause().toString();
+        String mensagemDesenvolvedor = ex.getCause().toString();
 
-		return handleExceptionInternal(ex, new Erro(mensagemUsuário, mensagemDesenvolvedor), headers, HttpStatus.BAD_REQUEST, request);
-	}
+        List<Erro> erros = Arrays.asList(new Erro(mensagemUsuário, mensagemDesenvolvedor));
+        return handleExceptionInternal(ex, erros, headers, HttpStatus.BAD_REQUEST, request);
+    }
 
-	public static class Erro {
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                                                                  HttpHeaders headers, HttpStatus status, WebRequest request) {
+        return handleExceptionInternal(ex, criarListaErros(ex.getBindingResult()), headers, HttpStatus.BAD_REQUEST, request);
+    }
 
-		private String mensagemUsuário;
-		private String mensagemDesenvolvedor;
+    private List<Erro> criarListaErros(BindingResult bindingResult) {
+        List<Erro> erros = new ArrayList<>();
 
-		public Erro(String mensagemUsuário, String mensagemDesenvolvedor) {
-			super();
-			this.mensagemUsuário = mensagemUsuário;
-			this.mensagemDesenvolvedor = mensagemDesenvolvedor;
-		}
+        bindingResult.getFieldErrors().forEach(fieldError -> {
+            String mensagemUsuário = source.getMessage(fieldError, LocaleContextHolder.getLocale());
+            String mensagemDesenvolvedor = fieldError.toString();
+            erros.add(new Erro(mensagemUsuário, mensagemDesenvolvedor));
+        });
 
-		public String getMensagemUsuário() {
-			return mensagemUsuário;
-		}
 
-		public String getMensagemDesenvolvedor() {
-			return mensagemDesenvolvedor;
-		}
+        return erros;
+    }
 
-	}
+    public static class Erro {
+
+        private String mensagemUsuário;
+        private String mensagemDesenvolvedor;
+
+        public Erro(String mensagemUsuário, String mensagemDesenvolvedor) {
+            super();
+            this.mensagemUsuário = mensagemUsuário;
+            this.mensagemDesenvolvedor = mensagemDesenvolvedor;
+        }
+
+        public String getMensagemUsuário() {
+            return mensagemUsuário;
+        }
+
+        public String getMensagemDesenvolvedor() {
+            return mensagemDesenvolvedor;
+        }
+
+    }
 
 }
