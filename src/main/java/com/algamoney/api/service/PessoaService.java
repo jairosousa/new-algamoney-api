@@ -24,7 +24,7 @@ public class PessoaService {
         pessoaRepository.save(pessoaSalva);
     }
 
-    private Pessoa getPessoaPorCodigo(Long codigo) {
+    public Pessoa getPessoaPorCodigo(Long codigo) {
         return pessoaRepository.findById(codigo).get();
     }
 
