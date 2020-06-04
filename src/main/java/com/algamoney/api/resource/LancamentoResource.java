@@ -25,7 +25,6 @@ public class LancamentoResource {
 
     private final ApplicationEventPublisher publisher;
 
-
     public LancamentoResource(LancamentoRepository lancamentoRepository, ApplicationEventPublisher publisher) {
         this.lancamentoRepository = lancamentoRepository;
         this.publisher = publisher;
