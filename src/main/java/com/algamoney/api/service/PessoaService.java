@@ -13,8 +13,19 @@ public class PessoaService {
     private PessoaRepository pessoaRepository;
 
     public Pessoa atualizarPessoa(Long codigo, Pessoa pessoa) {
-        Pessoa pessoaSalva = pessoaRepository.findById(codigo).get();
+        Pessoa pessoaSalva = getPessoaPorCodigo(codigo);
         BeanUtils.copyProperties(pessoa, pessoaSalva, "codigo");
         return pessoaRepository.save(pessoaSalva);
     }
+
+    public void atualizarPropriedadeAtivo(Long codigo, Boolean ativo) {
+        Pessoa pessoaSalva = getPessoaPorCodigo(codigo);
+        pessoaSalva.setAtivo(ativo);
+        pessoaRepository.save(pessoaSalva);
+    }
+
+    private Pessoa getPessoaPorCodigo(Long codigo) {
+        return pessoaRepository.findById(codigo).get();
+    }
+
 }
