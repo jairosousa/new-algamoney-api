@@ -1,12 +1,12 @@
 package com.algamoney.api.resource;
 
 import com.algamoney.api.event.RecursoCriadoEvent;
-import com.algamoney.api.exceptionHandler.AlgamoneyExceptionHandler;
 import com.algamoney.api.exceptionHandler.AlgamoneyExceptionHandler.Erro;
 import com.algamoney.api.model.Lancamento;
 import com.algamoney.api.repository.LancamentoRepository;
 import com.algamoney.api.repository.filter.LancamentoFilter;
 import com.algamoney.api.service.LancamentoService;
+import com.algamoney.api.service.exception.LancamentoInexistenteException;
 import com.algamoney.api.service.exception.PessoaInexistenteOuInativaException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
@@ -64,17 +64,12 @@ public class LancamentoResource {
         return ResponseEntity.ok(optional.get());
     }
 
-//    @DeleteMapping("/{codigo}")
-//    public ResponseEntity<?> remover(@PathVariable Long codigo) {
-//        Optional<Pessoa> optional = lancamentoRepository.findById(codigo);
-//        if (optional.isPresent()) {
-//            lancamentoRepository.delete(optional.get());
-//            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-//        } else {
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
-//
+    @DeleteMapping("/{codigo}")
+    public ResponseEntity<?> remover(@PathVariable Long codigo) {
+            lancamentoService.remover(codigo);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
 //    @PutMapping("/{codigo}")
 //    public ResponseEntity<Pessoa> atualizar(@PathVariable Long codigo,
 //                                            @RequestBody @Valid Pessoa pessoa) {
@@ -91,6 +86,16 @@ public class LancamentoResource {
     @ExceptionHandler({PessoaInexistenteOuInativaException.class})
     public ResponseEntity<Object> handlePessoaInexistenteOuInativaException(PessoaInexistenteOuInativaException ex) {
         String mensagemUsuário = source.getMessage("pessoa.inexistente-ou-inativa", null, LocaleContextHolder.getLocale());
+        String mensagemDesenvolvedor = ex.toString();
+
+        List<Erro> erros = Arrays.asList(new Erro(mensagemUsuário, mensagemDesenvolvedor));
+
+        return ResponseEntity.badRequest().body(erros);
+    }
+
+    @ExceptionHandler({LancamentoInexistenteException.class})
+    public ResponseEntity<Object> handleLancamentoInexistenteException(LancamentoInexistenteException ex) {
+        String mensagemUsuário = source.getMessage("lacamento.inexistente", null, LocaleContextHolder.getLocale());
         String mensagemDesenvolvedor = ex.toString();
 
         List<Erro> erros = Arrays.asList(new Erro(mensagemUsuário, mensagemDesenvolvedor));

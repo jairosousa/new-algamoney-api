@@ -1,6 +1,7 @@
 package com.algamoney.api.repository.lancamento;
 
 import com.algamoney.api.model.Lancamento;
+import com.algamoney.api.model.Lancamento_;
 import com.algamoney.api.repository.filter.LancamentoFilter;
 import org.springframework.util.StringUtils;
 
