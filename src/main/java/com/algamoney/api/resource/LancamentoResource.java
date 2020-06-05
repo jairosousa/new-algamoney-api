@@ -11,6 +11,8 @@ import com.algamoney.api.service.exception.PessoaInexistenteOuInativaException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,9 +44,8 @@ public class LancamentoResource {
     }
 
     @GetMapping
-    public List<Lancamento> pesquisar(LancamentoFilter lancamentoFilter) {
-
-        return lancamentoRepository.filtrar(lancamentoFilter);
+    public Page<Lancamento> pesquisar(LancamentoFilter lancamentoFilter, Pageable pageable) {
+        return lancamentoRepository.filtrar(lancamentoFilter, pageable);
     }
 
     @PostMapping
@@ -69,19 +70,6 @@ public class LancamentoResource {
             lancamentoService.remover(codigo);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
-//    @PutMapping("/{codigo}")
-//    public ResponseEntity<Pessoa> atualizar(@PathVariable Long codigo,
-//                                            @RequestBody @Valid Pessoa pessoa) {
-//        return ResponseEntity.ok(pessoaService.atualizarPessoa(codigo, pessoa));
-//    }
-//
-//    @PutMapping("/{codigo}/ativo")
-//    @ResponseStatus(HttpStatus.NO_CONTENT)
-//    public void atualizarPropriedadeAtivo(@PathVariable Long codigo,
-//                                          @RequestBody Boolean ativo) {
-//        pessoaService.atualizarPropriedadeAtivo(codigo, ativo);
-//    }
 
     @ExceptionHandler({PessoaInexistenteOuInativaException.class})
     public ResponseEntity<Object> handlePessoaInexistenteOuInativaException(PessoaInexistenteOuInativaException ex) {
