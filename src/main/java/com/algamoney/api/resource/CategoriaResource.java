@@ -29,6 +29,7 @@ public class CategoriaResource {
 		this.publisher = publisher;
 	}
 
+	@CrossOrigin(maxAge = 10, origins = {"http://localhost:8000"})
 	@GetMapping
 	public List<Categoria> listar() {
 		return categoriaRepository.findAll();

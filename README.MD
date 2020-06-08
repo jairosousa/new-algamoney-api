@@ -9,7 +9,7 @@
 * Verifique a versão?
 
 ```
-pithon -V
+python -V
 ```
 
 * Se a versão do Python retornada acima for 3.X
