@@ -21,13 +21,6 @@ public class AuthorizacionServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @Override
-    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-        security.tokenKeyAccess("permitAll()")
-                .checkTokenAccess("isAuthenticated()")
-                .allowFormAuthenticationForClients();
-    }
-
     /**
      * Configuração da aplicação
      * Autorizar o cliente -> Quem o usuario esta usando
@@ -43,7 +36,7 @@ public class AuthorizacionServerConfig extends AuthorizationServerConfigurerAdap
                 .secret("@ngul@ar0")
                 .scopes("read", "write")
                 .authorizedGrantTypes("password", "refresh_token")
-                .accessTokenValiditySeconds(3600 * 5) // 5 minuto
+                .accessTokenValiditySeconds(30) // 5 minuto
                 .refreshTokenValiditySeconds(3600 * 24); // um dia
 
     }
