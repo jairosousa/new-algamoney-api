@@ -7,6 +7,7 @@ import com.algamoney.api.service.PessoaService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,11 +32,13 @@ public class PessoaResource {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_PESSOA') and #oauth2.hasScope('read')")
     public List<Pessoa> listar() {
         return pessoaRepository.findAll();
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_CADASTRAR_PESSOA') and #oauth2.hasScope('write')")
     public ResponseEntity<Pessoa> criar(@Valid @RequestBody Pessoa pessoa, HttpServletResponse response) {
         Pessoa pessoaSave = pessoaRepository.save(pessoa);
 
@@ -45,14 +48,23 @@ public class PessoaResource {
 
     }
 
+    @PutMapping("/{codigo}")
+    @PreAuthorize("hasAuthority('ROLE_CADASTRAR_PESSOA') and #oauth2.hasScope('write')")
+    public ResponseEntity<Pessoa> atualizar(@PathVariable Long codigo,
+                                            @RequestBody @Valid Pessoa pessoa) {
+        return ResponseEntity.ok(pessoaService.atualizarPessoa(codigo, pessoa));
+    }
+
     @GetMapping("/{codigo}")
     @Transactional
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_PESSOA') and #oauth2.hasScope('read')")
     public ResponseEntity<?> buscarPeloCodigo(@PathVariable Long codigo) {
         Optional<Pessoa> optional = pessoaRepository.findById(codigo);
         return ResponseEntity.ok(optional.get());
     }
 
     @DeleteMapping("/{codigo}")
+    @PreAuthorize("hasAuthority('ROLE_REMOVER_PESSOA') and #oauth2.hasScope('write')")
     public ResponseEntity<?> remover(@PathVariable Long codigo) {
         Optional<Pessoa> optional = pessoaRepository.findById(codigo);
         if (optional.isPresent()) {
@@ -63,14 +75,10 @@ public class PessoaResource {
         }
     }
 
-    @PutMapping("/{codigo}")
-    public ResponseEntity<Pessoa> atualizar(@PathVariable Long codigo,
-                                            @RequestBody @Valid Pessoa pessoa) {
-        return ResponseEntity.ok(pessoaService.atualizarPessoa(codigo, pessoa));
-    }
 
     @PutMapping("/{codigo}/ativo")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAuthority('ROLE_CADASTRAR_PESSOA') and #oauth2.hasScope('write')")
     public void atualizarPropriedadeAtivo(@PathVariable Long codigo,
                                           @RequestBody Boolean ativo) {
         pessoaService.atualizarPropriedadeAtivo(codigo, ativo);
