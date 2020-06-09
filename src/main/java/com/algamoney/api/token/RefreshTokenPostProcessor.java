@@ -1,5 +1,7 @@
 package com.algamoney.api.token;
 
+import com.algamoney.api.config.property.AlgamoneyProperty;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -18,6 +20,9 @@ import javax.servlet.http.HttpServletResponse;
 
 @ControllerAdvice
 public class RefreshTokenPostProcessor implements ResponseBodyAdvice<OAuth2AccessToken> {
+
+    @Autowired
+    private AlgamoneyProperty algamoneyProperty;
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
@@ -52,7 +57,7 @@ public class RefreshTokenPostProcessor implements ResponseBodyAdvice<OAuth2Acces
     private void adicionarRefreshTokenNoCookie(String refreshToken, HttpServletRequest req, HttpServletResponse resp) {
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
         refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(false); // TODO: 05/06/2020 Mudar para true em produção
+        refreshTokenCookie.setSecure(algamoneyProperty.getSeguranca().isEnableHttps());
         refreshTokenCookie.setPath(req.getContextPath().concat("/oauth/token"));
         refreshTokenCookie.setMaxAge(2592000); // 30 Dias
         resp.addCookie(refreshTokenCookie);

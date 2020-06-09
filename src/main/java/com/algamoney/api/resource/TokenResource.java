@@ -1,5 +1,7 @@
 package com.algamoney.api.resource;
 
+import com.algamoney.api.config.property.AlgamoneyProperty;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("tokens")
 public class TokenResource {
 
+    @Autowired
+    private AlgamoneyProperty algamoneyProperty;
+
     /**
      * Codigo para fazer o Logout
      * Simplemente retira o cookie refreshToken
@@ -23,7 +28,7 @@ public class TokenResource {
     public void revoke(HttpServletRequest request, HttpServletResponse response) {
         Cookie cookie = new Cookie("refreshToken", null);
         cookie.setHttpOnly(true);
-        cookie.setSecure(false); //// TODO: 09/06/2020 em Produção será true pois vamos usar HTTPS
+        cookie.setSecure(algamoneyProperty.getSeguranca().isEnableHttps());
         cookie.setPath(request.getContextPath().concat("/oauth/token"));
         cookie.setMaxAge(0);
 
