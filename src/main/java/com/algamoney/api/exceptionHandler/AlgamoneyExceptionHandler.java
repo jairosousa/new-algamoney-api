@@ -5,11 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -69,6 +69,17 @@ public class AlgamoneyExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({DataIntegrityViolationException.class})
     public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
         String mensagemUsuário = source.getMessage("recurso.operacao-nao-permitida", null, LocaleContextHolder.getLocale());
+
+        String mensagemDesenvolvedor = ExceptionUtils.getRootCauseMessage(ex);
+
+        List<Erro> erros = Arrays.asList(new Erro(mensagemUsuário, mensagemDesenvolvedor));
+
+        return handleExceptionInternal(ex, erros, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler({InvalidGrantException.class})
+    public ResponseEntity<Object> handleUsernameNotFoundException(InvalidGrantException ex, WebRequest request) {
+        String mensagemUsuário = source.getMessage("usuario.credenciais-nao-permitida", null, LocaleContextHolder.getLocale());
 
         String mensagemDesenvolvedor = ExceptionUtils.getRootCauseMessage(ex);
 
