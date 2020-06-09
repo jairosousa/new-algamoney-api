@@ -36,7 +36,14 @@ public class AuthorizacionServerConfig extends AuthorizationServerConfigurerAdap
                 .secret(new BCryptPasswordEncoder().encode("@ngul@ar0"))
                 .scopes("read", "write")
                 .authorizedGrantTypes("password", "refresh_token")
-                .accessTokenValiditySeconds(30) // 5 minuto
+                .accessTokenValiditySeconds(1800) // 1 minuto
+                .refreshTokenValiditySeconds(3600 * 24) // um dia
+        .and()
+                .withClient("mobile")
+                .secret(new BCryptPasswordEncoder().encode("m0bile0"))
+                .scopes("read")
+                .authorizedGrantTypes("password", "refresh_token")
+                .accessTokenValiditySeconds(1800) // 1 minuto
                 .refreshTokenValiditySeconds(3600 * 24); // um dia
 
     }

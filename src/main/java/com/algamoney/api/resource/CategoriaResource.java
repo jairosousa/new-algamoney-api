@@ -10,6 +10,7 @@ import com.algamoney.api.event.RecursoCriadoEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,13 +30,14 @@ public class CategoriaResource {
 		this.publisher = publisher;
 	}
 
-	@CrossOrigin(maxAge = 10, origins = {"http://localhost:8000"})
 	@GetMapping
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') and #oauth2.hasScope('read')")
 	public List<Categoria> listar() {
 		return categoriaRepository.findAll();
 	}
 
 	@PostMapping
+	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_CATEGORIA') and #oauth2.hasScope('write')")
 	public ResponseEntity<Categoria> criar(@Valid @RequestBody Categoria categoria, HttpServletResponse response) {
 		Categoria categoriaSave = categoriaRepository.save(categoria);
 
@@ -47,6 +49,7 @@ public class CategoriaResource {
 	
 	@GetMapping("/{codigo}")
 	@Transactional
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') and #oauth2.hasScope('read')")
 	public ResponseEntity<?> buscarPeloCodigo(@PathVariable Long codigo) {
 		Optional<Categoria> optional = categoriaRepository.findById(codigo);
 		return optional.isPresent() ? ResponseEntity.ok(optional.get())
