@@ -1,0 +1,1 @@
+web: java -Dserver.port=$PORT -Dspring.profiles.active=prod $JAVA_OPTS -jargit add . target/algamoney*.jar
