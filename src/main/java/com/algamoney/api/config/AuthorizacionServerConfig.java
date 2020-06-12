@@ -3,6 +3,7 @@ package com.algamoney.api.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,6 +15,7 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
+@Profile("oauth-security")
 @Configuration
 @EnableAuthorizationServer
 public class AuthorizacionServerConfig extends AuthorizationServerConfigurerAdapter {
@@ -34,6 +36,7 @@ public class AuthorizacionServerConfig extends AuthorizationServerConfigurerAdap
         clients.inMemory()
                 .withClient("angular")
                 .secret(new BCryptPasswordEncoder().encode("@ngul@ar0"))
+//                .secret("@ngul@ar0")
                 .scopes("read", "write")
                 .authorizedGrantTypes("password", "refresh_token")
                 .accessTokenValiditySeconds(1800) // 1 minuto
