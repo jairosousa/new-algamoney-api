@@ -5,6 +5,8 @@ import com.algamoney.api.model.Pessoa;
 import com.algamoney.api.repository.PessoaRepository;
 import com.algamoney.api.service.PessoaService;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,7 +33,7 @@ public class PessoaResource {
         this.pessoaService = pessoaService;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     @PreAuthorize("hasAuthority('ROLE_PESQUISAR_PESSOA') and #oauth2.hasScope('read')")
     public List<Pessoa> listar() {
         return pessoaRepository.findAll();
@@ -82,6 +84,12 @@ public class PessoaResource {
     public void atualizarPropriedadeAtivo(@PathVariable Long codigo,
                                           @RequestBody Boolean ativo) {
         pessoaService.atualizarPropriedadeAtivo(codigo, ativo);
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_PESSOA')")
+    public Page<Pessoa> pesquisar(@RequestParam(required = false, defaultValue = "%") String nome, Pageable pageable) {
+        return pessoaService.findByNomeOrAll(nome, pageable);
     }
 
 }
