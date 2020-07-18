@@ -73,7 +73,7 @@ public class LancamentoResource {
     @PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and #oauth2.hasScope('read')")
     public ResponseEntity<?> buscarPeloCodigo(@PathVariable Long codigo) {
         Optional<Lancamento> optional = lancamentoRepository.findById(codigo);
-        return ResponseEntity.ok(optional.get());
+        return optional.isPresent() ? ResponseEntity.ok(optional.get()) : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{codigo}")

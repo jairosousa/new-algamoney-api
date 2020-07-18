@@ -15,6 +15,12 @@
     <description>Projeto Spring Boot Rest</description>
 
     <properties>
+        <project.build.sourceEnconding>UTF-8</project.build.sourceEnconding>
+        <project.reporting.outputEnconding>UTF-8</project.reporting.outputEnconding>
+
+        <spring-security-oauth2.version>2.2.1.RELEASE</spring-security-oauth2.version>
+        <spring-security-jwt.version>1.0.9.RELEASE</spring-security-jwt.version>
+
         <java.version>1.8</java.version>
     </properties>
 
@@ -38,14 +44,14 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.security.oauth.boot</groupId>
-            <artifactId>spring-security-oauth2-autoconfigure</artifactId>
-            <version>2.0.1.RELEASE</version>
+            <groupId>org.springframework.security.oauth</groupId>
+            <artifactId>spring-security-oauth2</artifactId>
+            <version>${spring-security-oauth2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-jwt</artifactId>
-            <version>1.0.10.RELEASE</version>
+            <version>${spring-security-jwt.version}</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
